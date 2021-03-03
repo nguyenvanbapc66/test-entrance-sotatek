@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import "./asset/style-a.css";
-import FormNewTask from "./features/TodoList-a/FormNewTask";
-import TodoList from "./features/TodoList-a/TodoList";
+import "./asset/style.css";
+import FormNewTask from "./features/TodoList/FormNewTask";
+import TodoList from "./features/TodoList/TodoList";
 
 class AppTodoList extends Component {
   constructor(props) {

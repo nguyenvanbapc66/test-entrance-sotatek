@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import Task from "./Task";
-import Button from "../../components/Button";
 import Input from "../../components/Input";
 
 class TodoList extends Component {
@@ -8,14 +7,7 @@ class TodoList extends Component {
     super(props);
 
     this.state = {
-      id: null,
-      isChecked: false,
-      isOpenDetail: false,
-      titleTaskUpdate: "",
-      dueDateUpdate: "",
-      discriptionUpdate: "",
-      piorityUpdate: "",
-      isUpdateDetail: false,
+      titleTaskFound: "",
     };
   }
 
@@ -25,180 +17,78 @@ class TodoList extends Component {
     });
   };
 
-  clickCheckBoxHandle = () => {
-    this.setState((state, props) => ({
-      isChecked: !state.isChecked,
-    }));
+  updateDetail = (id, titleTask, discription, dueDate, piority) => {
+    const newInfoTask = {
+      id,
+      titleTask,
+      discription,
+      dueDate,
+      piority,
+    };
+
+    const list = [...this.props.list];
+    const editingList = list.filter((item) => item.id !== id);
+    editingList.push(newInfoTask);
+
+    this.props.updateList(editingList);
   };
 
-  clickBtnDetailHandle = (todoId) => {
-    this.setState((state, props) => ({
-      isOpenDetail: !state.isOpenDetail,
-    }));
-  };
+  deleteDetail = (id) => {
+    console.log(id);
+    const list = [...this.props.list];
+    const editingList = list.filter((item) => item.id !== id);
 
-  clickBtnRemoveHandle = () => {};
-
-  btnClickUpdateDetail = () => {
-    this.setState({
-      isUpdateDetail: true,
-    });
+    this.props.updateList(editingList);
   };
 
   render() {
+    const sortList = this.props.list.sort(
+      (a, b) => new Date(a.dueDate) - new Date(b.dueDate)
+    );
+    const taskFound = sortList.filter(
+      (item) => item.titleTask.toLowerCase().includes(this.state.titleTaskFound.toLowerCase())
+    );
+
     return (
       <div className="container-todo-list">
-        <div className="todo-list">
-          <div className="header">To Do List</div>
-          <div className="content">
-            {this.props.list.map((item) => (
-              <div key={item.id}>
-                <div
-                  className={this.state.isChecked ? "item task-done" : "item"}
-                >
+        <div className="header">To Do List</div>
+        <div className="input-search">
+          <Input
+            type="text"
+            placeholder="Search ..."
+            className="title-task"
+            value={this.state.titleTaskFound}
+            onChange={(e) => this.updateInput("titleTaskFound", e.target.value)}
+          />
+        </div>
+        <div className="list-items">
+          {!this.state.titleTaskFound
+            ? sortList.map((item) => (
+                <div key={item.id}>
                   <Task
+                    id={item.id}
                     titleTask={item.titleTask}
                     discription={item.discription}
                     dueDate={item.dueDate}
                     piority={item.piority}
-                    titleTaskUpdate={
-                      this.state.titleTaskUpdate
-                        ? this.state.titleTaskUpdate
-                        : item.titleTask
-                    }
-                    discriptionUpdate={
-                      this.state.discriptionUpdate
-                        ? this.state.discriptionUpdate
-                        : item.discription
-                    }
-                    dueDateUpdate={
-                      this.state.dueDateUpdate
-                        ? this.state.dueDateUpdate
-                        : item.dueDate
-                    }
-                    piorityUpdate={
-                      this.state.piorityUpdate
-                        ? this.state.piorityUpdate
-                        : item.piority
-                    }
-                    isChecked={this.state.isChecked}
-                    onClick={() => this.clickCheckBoxHandle()}
-                    isUpdateDetail={this.state.isUpdateDetail}
+                    updateDetail={this.updateDetail}
+                    deleteDetail={this.deleteDetail}
                   />
-                  <div className="btn-edit">
-                    <div className="inner">
-                      <Button
-                        color="#17c0eb"
-                        name="Detail"
-                        onClick={() => this.clickBtnDetailHandle(item.id)}
-                      />
-                    </div>
-                    <div className="inner">
-                      <Button
-                        color="#ff3838"
-                        name="Remove"
-                        onClick={() => this.clickBtnRemoveHandle()}
-                      />
-                    </div>
-                  </div>
                 </div>
-
-                {/* form edit Detail */}
-                <div
-                  className={
-                    this.state.isOpenDetail ? "collapse-in" : "collapse"
-                  }
-                >
-                  <div className="container-form-detail">
-                    <div className="form-detail-task">
-                      <div className="content">
-                        <div className="input-wrapper">
-                          <Input
-                            className="title-task"
-                            type="text"
-                            placeholder="Add new task ..."
-                            value={
-                              this.state.titleTaskUpdate
-                                ? this.state.titleTaskUpdate
-                                : item.titleTask
-                            }
-                            onChange={(e) =>
-                              this.updateInput(
-                                "titleTaskUpdate",
-                                e.target.value
-                              )
-                            }
-                          />
-                        </div>
-                        <div className="input-wrapper">
-                          <div className="title-input">Desription</div>
-                          <textarea
-                            value={
-                              this.state.discriptionUpdate
-                                ? this.state.discriptionUpdate
-                                : item.discription
-                            }
-                            onChange={(e) =>
-                              this.updateInput(
-                                "discriptionUpdate",
-                                e.target.value
-                              )
-                            }
-                          ></textarea>
-                        </div>
-                        <div className="detail">
-                          <div className="input-wrapper">
-                            <div className="title-input">Due Date</div>
-                            <Input
-                              type="date"
-                              value={
-                                this.state.dueDateUpdate
-                                  ? this.state.dueDateUpdate
-                                  : item.dueDate
-                              }
-                              onChange={(e) =>
-                                this.updateInput(
-                                  "dueDateUpdate",
-                                  e.target.value
-                                )
-                              }
-                            />
-                          </div>
-                          <div className="input-wrapper">
-                            <div className="title-input">Piority</div>
-                            <select
-                              value={
-                                this.state.piorityUpdate
-                                  ? this.state.piorityUpdate
-                                  : item.piority
-                              }
-                              onChange={(e) =>
-                                this.updateInput(
-                                  "piorityUpdate",
-                                  e.target.value
-                                )
-                              }
-                            >
-                              <option>Low</option>
-                              <option>Normal</option>
-                              <option>High</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="footer">
-                        <Button
-                          color="#27ae60"
-                          name="Update"
-                          onClick={() => this.btnClickUpdateDetail()}
-                        />
-                      </div>
-                    </div>
-                  </div>
+              ))
+            : taskFound.map((item) => (
+                <div key={item.id}>
+                  <Task
+                    id={item.id}
+                    titleTask={item.titleTask}
+                    discription={item.discription}
+                    dueDate={item.dueDate}
+                    piority={item.piority}
+                    updateDetail={this.updateDetail}
+                    deleteDetail={this.deleteDetail}
+                  />
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
         </div>
       </div>
     );
